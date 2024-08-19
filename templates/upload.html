@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+            width: 400px;
+            border-radius: 5px;
+            background-color: white;
+            padding: 20px;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: fit-content;
+            align-self: flex-end;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #jpgPreview,
+        #mp4Preview {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Face Swapper</h2>
+
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <label for="jpgFile">Select Target Face:</label>
+    <input type="file" id="jpgFile" name="jpgFile" accept=".jpg, .jpeg" onchange="previewImage(event)">
+    <img id="jpgPreview" src="#" alt="JPG preview" style="max-width: 100%; display: none;">
+    <label for="mp4File">Select Target Video:</label>
+    <input type="file" id="mp4File" name="mp4File" accept=".mp4" onchange="previewVideo(event)">
+    <video id="mp4Preview" controls style="max-width: 100%; display: none;"></video>
+    <input type="submit" value="Swap" name="submit">
+  </form>
+</div>
+
+<div id="status"></div>
+<script>
+    const eventSource = new EventSource("/status");
+    eventSource.onmessage = function(event) {
+        document.getElementById("status").innerText = event.data;
+    };
+</script>
+
+<script>
+function previewImage(event) {
+  var reader = new FileReader();
+  reader.onload = function(){
+    var output = document.getElementById('jpgPreview');
+    output.src = reader.result;
+    output.style.display = 'block';
+  };
+  reader.readAsDataURL(event.target.files[0]);
+}
+
+function previewVideo(event) {
+  var video = document.getElementById('mp4Preview');
+  video.src = URL.createObjectURL(event.target.files[0]);
+  video.style.display = 'block';
+}
+
+$(document).ready(function() {
+  $('form').submit(function(event) {
+    event.preventDefault();
+    var formData = new FormData($(this)[0]);
+    $.ajax({
+      type: 'POST',
+      url: '/upload',
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function(response) {
+        toastr.success(response.message);
+      },
+      error: function(response) {
+        toastr.error(response.responseJSON.message);
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

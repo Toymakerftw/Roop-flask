@@ -1,0 +1,11 @@
+# Ignore the roop_env folder
+roop_env/
+
+# Ignore the contents of the uploads folder
+uploads/*
+
+# Ignore inswapper_128.onnx
+inswapper_128.onnx
+
+# Ignore __pycache__
+ roop/__pycache__/
