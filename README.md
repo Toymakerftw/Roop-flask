@@ -25,7 +25,7 @@ Roop-flask is a Flask web application that allows you to swap faces in videos us
 4. Run the Docker container:
 
     ```bash
-docker run -p 7777:7777 roop-flask
+    docker run -p 7777:7777 roop-flask
     ```
 
 5. Open your web browser and navigate to `http://localhost:4000` to see the Roop-flask web application running.
