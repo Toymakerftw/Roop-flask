@@ -1,8 +1,11 @@
 # Ignore the roop_env folder
 roop_env/
 
-# Ignore the contents of the uploads folder
+# Ignore everything in the uploads folder
 uploads/*
+
+# Except the .gitkeep file
+!uploads/.gitkeep
 
 # Ignore inswapper_128.onnx
 inswapper_128.onnx
