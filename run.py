@@ -55,10 +55,12 @@ def uploaded_files(path=''):
     for filename in files:
         file_path = os.path.join(base_path, filename)
         if os.path.isdir(file_path):
-            file_links.append(f"<a href='/uploads/{os.path.join(path, filename)}/'>{filename}/</a><br>")
+            icon = '<i class="fas fa-folder fa-3x"></i>'
+            file_links.append(f'<div class="file-item"><a href="/uploads/{os.path.join(path, filename)}/">{icon}<br>{filename}</a></div>')
         else:
-            file_links.append(f"<a href='/uploads/{os.path.join(path, filename)}'>{filename}</a><br>")
-    return "".join(file_links)
+            icon = '<i class="fas fa-file fa-3x"></i>'
+            file_links.append(f'<div class="file-item"><a href="/uploads/{os.path.join(path, filename)}">{icon}<br>{filename}</a></div>')
+    return f'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"><style>.file-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }}.file-item {{ padding: 20px; border: 1px solid #ccc; border-radius: 5px; text-align: center; }}.file-item a {{ text-decoration: none; color: #333; }}.file-item i {{ margin-bottom: 10px; }}</style><div class="file-grid">{" ".join(file_links)}</div>'
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'mp4'}
