@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from roop import core
@@ -44,10 +42,27 @@ def status_stream():
             time.sleep(0.1)
     return Response(event_stream(), mimetype="text/event-stream")
 
+@app.route('/uploads')
+@app.route('/uploads/<path:path>')
+def uploaded_files(path=''):
+    base_path = os.path.join(app.config['UPLOAD_FOLDER'], path)
+    if not os.path.exists(base_path):
+        return "Not found", 404
+    if os.path.isfile(base_path):
+        return send_from_directory(os.path.dirname(base_path), os.path.basename(base_path))
+    files = os.listdir(base_path)
+    file_links = []
+    for filename in files:
+        file_path = os.path.join(base_path, filename)
+        if os.path.isdir(file_path):
+            file_links.append(f"<a href='/uploads/{os.path.join(path, filename)}/'>{filename}/</a><br>")
+        else:
+            file_links.append(f"<a href='/uploads/{os.path.join(path, filename)}'>{filename}</a><br>")
+    return "".join(file_links)
+
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'mp4'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
-    #app.run(debug=True, port=7777)
     app.run(host="0.0.0.0", port=7777, debug=True)
